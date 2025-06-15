@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet build)",
+      "Bash(dotnet test)",
+      "Bash(dotnet run:*)",
+      "Bash(timeout:*)",
+      "Bash(dotnet clean:*)",
+      "Bash(dotnet test:*)",
+      "Bash(dotnet restore:*)",
+      "Bash(mkdir:*)",
+      "Bash(dotnet build:*)"
+    ],
+    "deny": []
+  }
+}

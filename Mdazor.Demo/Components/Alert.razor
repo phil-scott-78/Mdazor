@@ -1,0 +1,19 @@
+@{
+    var alertClass = Type switch
+    {
+        "success" => "alert-success",
+        "warning" => "alert-warning",
+        "danger" => "alert-danger",
+        "info" => "alert-info",
+        _ => "alert-primary"
+    };
+}
+
+<div class="alert @alertClass" role="alert">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public string Type { get; set; } = "primary";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mdazor", "Mdazor\Mdazor.csproj", "{6DA6194C-6E5A-4FA7-9F75-13D9324F053F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mdazor.Demo", "Mdazor.Demo\Mdazor.Demo.csproj", "{8322899E-8AAB-4A83-A8E9-F0A6D99B7519}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mdazor.Tests", "Mdazor.Tests\Mdazor.Tests.csproj", "{9740496A-1F6F-4F2A-8E42-C0B5C0B7FEDD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Solution Stuff", ".Solution Stuff", "{029FA9EE-2B81-45FF-9B7A-3945A9BA2F1C}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		global.json = global.json
+		README.md = README.md
+		dotnet-releaser.toml = dotnet-releaser.toml
+		LICENSE = LICENSE
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6DA6194C-6E5A-4FA7-9F75-13D9324F053F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DA6194C-6E5A-4FA7-9F75-13D9324F053F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DA6194C-6E5A-4FA7-9F75-13D9324F053F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DA6194C-6E5A-4FA7-9F75-13D9324F053F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8322899E-8AAB-4A83-A8E9-F0A6D99B7519}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8322899E-8AAB-4A83-A8E9-F0A6D99B7519}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8322899E-8AAB-4A83-A8E9-F0A6D99B7519}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8322899E-8AAB-4A83-A8E9-F0A6D99B7519}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9740496A-1F6F-4F2A-8E42-C0B5C0B7FEDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9740496A-1F6F-4F2A-8E42-C0B5C0B7FEDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9740496A-1F6F-4F2A-8E42-C0B5C0B7FEDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9740496A-1F6F-4F2A-8E42-C0B5C0B7FEDD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,59 @@
+@page "/"
+@using Markdig
+@inject IComponentRegistry ComponentRegistry
+@inject IServiceProvider ServiceProvider
+<PageTitle>Mdazor Demo</PageTitle>
+
+<div class="container mt-4">
+    <h1>Mdazor Demo</h1>
+    <p>This demonstrates Blazor components embedded in Markdown using Mdazor.</p>
+    
+    @((MarkupString) RenderedContent)
+</div>
+
+@code {
+    string RenderedContent { get; set; } = string.Empty;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var pipeline = new MarkdownPipelineBuilder()
+            .UseMdazor()
+            .Build();
+        
+        var document = Markdown.Parse(_markdownContent, pipeline);
+
+        await using var writer = new StringWriter();
+        var blazorRenderer = new BlazorRenderer(writer, ComponentRegistry, ServiceProvider);
+            
+        blazorRenderer.Render(document);
+        RenderedContent = writer.ToString();
+        await base.OnInitializedAsync();
+    }
+
+    private readonly string _markdownContent = @"
+# Welcome to Mdazor
+
+<Card title=""My Card"" subtitle=""Demo"">
+# Markdown Heading
+
+This is **bold** text and this is *italic*.
+
+- List item 1
+- List item 2
+
+<Alert type=""info"">
+Nested component with **markdown**!
+</Alert>
+
+More content here.
+</Card>
+
+## Another Section
+
+<Alert type=""warning"">
+This is a **warning** alert outside the card!
+</Alert>
+
+
+";
+}

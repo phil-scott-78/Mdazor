@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IsPackable>false</IsPackable>
+
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Markdig" Version="0.41.2"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="../Mdazor/Mdazor.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Components\App.razor" />
+      <_ContentIncludedByDefault Remove="Components\Layout\MainLayout.razor" />
+      <_ContentIncludedByDefault Remove="Components\Layout\NavMenu.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Counter.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Error.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Home.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Weather.razor" />
+      <_ContentIncludedByDefault Remove="Components\Routes.razor" />
+      <_ContentIncludedByDefault Remove="Components\UI\Card.razor" />
+      <_ContentIncludedByDefault Remove="Components\UI\CardGrid.razor" />
+      <_ContentIncludedByDefault Remove="Components\UI\Steps.razor" />
+      <_ContentIncludedByDefault Remove="Components\UI\TabItem.razor" />
+      <_ContentIncludedByDefault Remove="Components\UI\Tabs.razor" />
+      <_ContentIncludedByDefault Remove="Components\_Imports.razor" />
+    </ItemGroup>
+
+</Project>
