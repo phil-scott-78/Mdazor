@@ -34,7 +34,7 @@ public class ComponentBlockRenderer : HtmlObjectRenderer<ComponentBlock>
 
         try
         {
-            var html = RenderComponentAsync(componentType, block.Attributes, block).GetAwaiter().GetResult();
+            var html = RenderComponentAsync(componentType, block.Attributes, block, renderer).GetAwaiter().GetResult();
             renderer.Write(html);
         }
         catch (Exception ex)
@@ -44,7 +44,7 @@ public class ComponentBlockRenderer : HtmlObjectRenderer<ComponentBlock>
         }
     }
 
-    private async Task<string> RenderComponentAsync(Type componentType, Dictionary<string, string> attributes, ComponentBlock? block)
+    private async Task<string> RenderComponentAsync(Type componentType, Dictionary<string, string> attributes, ComponentBlock? block, MarkdigHtmlRenderer sourceRenderer)
     {
         using var scope = _serviceProvider.CreateScope();
         var htmlRenderer = scope.ServiceProvider.GetRequiredService<BlazorHtmlRenderer>();
@@ -68,9 +68,7 @@ public class ComponentBlockRenderer : HtmlObjectRenderer<ComponentBlock>
             var childContentProperty = componentType.GetProperty("ChildContent");
             if (childContentProperty != null)
             {
-                var childMarkdown = RenderChildContent(block);
-                // var pipeline = new MarkdownPipelineBuilder().Use<MdazorExtension>().Build();
-                var childHtml = Markdown.ToHtml(childMarkdown, _pipeline);
+                var childHtml = RenderChildContent(block, sourceRenderer);
                 
                 parameters["ChildContent"] = new RenderFragment(builder =>
                 {
@@ -87,10 +85,10 @@ public class ComponentBlockRenderer : HtmlObjectRenderer<ComponentBlock>
         });
     }
 
-    private string RenderChildContent(ComponentBlock block)
+    private string RenderChildContent(ComponentBlock block, MarkdigHtmlRenderer sourceRenderer)
     {
         using var writer = new StringWriter();
-        var childRenderer = new BlazorRenderer(writer, _componentRegistry, _serviceProvider, _pipeline);
+        var childRenderer = new BlazorRenderer(writer, _componentRegistry, _serviceProvider, _pipeline, sourceRenderer);
         
         foreach (var child in block)
         {
@@ -116,7 +114,7 @@ public class ComponentBlockRenderer : HtmlObjectRenderer<ComponentBlock>
             // Render child content
             if (block.Count > 0)
             {
-                var childContent = RenderChildContent(block);
+                var childContent = RenderChildContent(block, renderer);
                 renderer.Write(childContent);
             }
             
