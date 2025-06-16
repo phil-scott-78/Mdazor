@@ -68,7 +68,7 @@ public class ComponentBlockRenderer : HtmlObjectRenderer<ComponentBlock>
             {
                 var childMarkdown = RenderChildContent(block);
                 var pipeline = new MarkdownPipelineBuilder().Use<MdazorExtension>().Build();
-                var childHtml = Markdig.Markdown.ToHtml(childMarkdown, pipeline);
+                var childHtml = Markdown.ToHtml(childMarkdown, pipeline);
                 
                 parameters["ChildContent"] = new RenderFragment(builder =>
                 {

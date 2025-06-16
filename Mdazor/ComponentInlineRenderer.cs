@@ -31,7 +31,7 @@ public class ComponentInlineRenderer : HtmlObjectRenderer<ComponentInline>
 
         try
         {
-            var html = RenderComponentAsync(componentType, inline.Attributes, null).GetAwaiter().GetResult();
+            var html = RenderComponentAsync(componentType, inline.Attributes).GetAwaiter().GetResult();
             renderer.Write(html);
         }
         catch (Exception ex)
@@ -41,7 +41,7 @@ public class ComponentInlineRenderer : HtmlObjectRenderer<ComponentInline>
         }
     }
 
-    private async Task<string> RenderComponentAsync(Type componentType, Dictionary<string, string> attributes, ComponentBlock? block)
+    private async Task<string> RenderComponentAsync(Type componentType, Dictionary<string, string> attributes)
     {
         using var scope = _serviceProvider.CreateScope();
         var htmlRenderer = scope.ServiceProvider.GetRequiredService<BlazorHtmlRenderer>();

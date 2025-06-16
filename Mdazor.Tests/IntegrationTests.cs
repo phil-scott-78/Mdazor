@@ -8,7 +8,6 @@ namespace Mdazor.Tests;
 
 public class IntegrationTests
 {
-    private readonly IServiceProvider _serviceProvider;
     private readonly IComponentRegistry _componentRegistry;
     private readonly MarkdownPipeline _pipeline;
 
@@ -21,10 +20,10 @@ public class IntegrationTests
             .AddMdazorComponent<TestAlert>();
 
         
-        _serviceProvider = services.BuildServiceProvider();
-        _componentRegistry = _serviceProvider.GetRequiredService<IComponentRegistry>();
+        IServiceProvider serviceProvider = services.BuildServiceProvider();
+        _componentRegistry = serviceProvider.GetRequiredService<IComponentRegistry>();
         _pipeline = new MarkdownPipelineBuilder()
-            .UseMdazor(_serviceProvider)
+            .UseMdazor(serviceProvider)
             .Build();
     }
 
@@ -41,7 +40,7 @@ public class IntegrationTests
     public void RenderSimpleComponent_ShouldProduceCorrectHtml()
     {
         var markdown = """
-                       <TestCard title="Hello World" />
+                       Here is a component: <TestCard title="Hello World" />
                        """;
 
         var result = RenderMarkdownToHtml(markdown);
@@ -192,13 +191,8 @@ public class IntegrationTests
 
     private string RenderMarkdownToHtml(string markdown)
     {
-        var document = Markdown.Parse(markdown, _pipeline);
-        
-        using var writer = new StringWriter();
-        var renderer = new BlazorRenderer(writer, _componentRegistry, _serviceProvider);
-        renderer.Render(document);
-        
-        return writer.ToString().Trim();
+        // Use Markdown.ToHtml to test the full integration
+        return Markdown.ToHtml(markdown, _pipeline).Trim();
     }
 
     // Test components for integration testing

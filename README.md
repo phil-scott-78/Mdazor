@@ -45,6 +45,36 @@ This is a custom Markdig extension that:
 The magic happens in the parsing phase - we intercept component-looking tags before they get processed as regular HTML,
 instantiate actual Blazor components, and render them using Blazor's server-side rendering.
 
+
+## Example Components
+
+Your components just need to be normal Blazor components:
+
+```razor
+@{
+    var alertClass = Type switch
+    {
+        "success" => "alert-success",
+        "warning" => "alert-warning",
+        "danger" => "alert-danger",
+        "info" => "alert-info",
+        _ => "alert-primary"
+    };
+}
+
+<div class="alert @alertClass" role="alert">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public string Type { get; set; } = "primary";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}
+```
+
+The `ChildContent` parameter gets populated with the processed Markdown content from inside the component tags.
+
+
 ## Features
 
 ### Component Syntax
@@ -136,34 +166,6 @@ var renderer = new BlazorRenderer(writer, componentRegistry, serviceProvider);
 renderer.Render(document);
 var html = writer.ToString();
 ```
-
-## Example Components
-
-Your components just need to be normal Blazor components:
-
-```razor
-@{
-    var alertClass = Type switch
-    {
-        "success" => "alert-success",
-        "warning" => "alert-warning",
-        "danger" => "alert-danger",
-        "info" => "alert-info",
-        _ => "alert-primary"
-    };
-}
-
-<div class="alert @alertClass" role="alert">
-    @ChildContent
-</div>
-
-@code {
-    [Parameter] public string Type { get; set; } = "primary";
-    [Parameter] public RenderFragment? ChildContent { get; set; }
-}
-```
-
-The `ChildContent` parameter gets populated with the processed Markdown content from inside the component tags.
 
 ## Technical Notes
 

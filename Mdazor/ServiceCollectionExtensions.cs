@@ -7,14 +7,14 @@ namespace Mdazor;
 
 public static class ServiceCollectionExtensions
 {
-    private static readonly List<Action<IComponentRegistry>> _componentRegistrations = new();
+    private static readonly List<Action<IComponentRegistry>> ComponentRegistrations = new();
 
     public static IServiceCollection AddMdazor(this IServiceCollection services)
     {
-        services.AddSingleton<IComponentRegistry>(provider =>
+        services.AddSingleton<IComponentRegistry>(_ =>
         {
             var registry = new ComponentRegistry();
-            foreach (var registration in _componentRegistrations)
+            foreach (var registration in ComponentRegistrations)
             {
                 registration(registry);
             }
@@ -39,14 +39,14 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddMdazorComponent<T>(this IServiceCollection services) where T : ComponentBase
     {
         services.AddTransient<T>();
-        _componentRegistrations.Add(registry => registry.RegisterComponent<T>());
+        ComponentRegistrations.Add(registry => registry.RegisterComponent<T>());
         return services;
     }
 
     public static IServiceCollection AddMdazorComponent<T>(this IServiceCollection services, string name) where T : ComponentBase
     {
         services.AddTransient<T>();
-        _componentRegistrations.Add(registry => registry.RegisterComponent<T>(name));
+        ComponentRegistrations.Add(registry => registry.RegisterComponent<T>(name));
         return services;
     }
 }
