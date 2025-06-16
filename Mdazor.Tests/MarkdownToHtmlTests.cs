@@ -18,7 +18,9 @@ public class MarkdownToHtmlTests
             .AddMdazorComponent<TestAlert>();
         
         var serviceProvider = services.BuildServiceProvider();
-        var pipeline = serviceProvider.GetRequiredService<MarkdownPipeline>();
+        var pipeline = new MarkdownPipelineBuilder()
+            .UseMdazor(serviceProvider)
+            .Build();
 
         // Test markdown with component
         var markdown = """
@@ -47,8 +49,10 @@ public class MarkdownToHtmlTests
         services.AddMdazor();
         
         var serviceProvider = services.BuildServiceProvider();
-        var pipeline = serviceProvider.GetRequiredService<MarkdownPipeline>();
-
+        var pipeline = new MarkdownPipelineBuilder()
+            .UseMdazor(serviceProvider)
+            .Build();
+        
         // Test markdown with unknown component
         var markdown = """
                        <UnknownComponent title="test">

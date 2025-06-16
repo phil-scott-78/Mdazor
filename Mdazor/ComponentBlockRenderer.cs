@@ -13,11 +13,13 @@ public class ComponentBlockRenderer : HtmlObjectRenderer<ComponentBlock>
 {
     private readonly IComponentRegistry _componentRegistry;
     private readonly IServiceProvider _serviceProvider;
+    private readonly MarkdownPipeline _pipeline;
 
-    public ComponentBlockRenderer(IComponentRegistry componentRegistry, IServiceProvider serviceProvider)
+    public ComponentBlockRenderer(IComponentRegistry componentRegistry, IServiceProvider serviceProvider, MarkdownPipeline pipeline)
     {
         _componentRegistry = componentRegistry;
         _serviceProvider = serviceProvider;
+        _pipeline = pipeline;
     }
 
     protected override void Write(MarkdigHtmlRenderer renderer, ComponentBlock block)
@@ -67,8 +69,8 @@ public class ComponentBlockRenderer : HtmlObjectRenderer<ComponentBlock>
             if (childContentProperty != null)
             {
                 var childMarkdown = RenderChildContent(block);
-                var pipeline = new MarkdownPipelineBuilder().Use<MdazorExtension>().Build();
-                var childHtml = Markdown.ToHtml(childMarkdown, pipeline);
+                // var pipeline = new MarkdownPipelineBuilder().Use<MdazorExtension>().Build();
+                var childHtml = Markdown.ToHtml(childMarkdown, _pipeline);
                 
                 parameters["ChildContent"] = new RenderFragment(builder =>
                 {

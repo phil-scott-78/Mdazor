@@ -33,14 +33,6 @@ public static class ServiceCollectionExtensions
             return registry;
         });
 
-        // Register a pre-configured MarkdownPipeline that supports components
-        services.AddSingleton<MarkdownPipeline>(serviceProvider =>
-        {
-            return new MarkdownPipelineBuilder()
-                .UseMdazor(serviceProvider)
-                .Build();
-        });
-
         // critical this is transient, otherwise you'll get issues like DI throwing
         // Cannot resolve scoped service 'Microsoft.AspNetCore.Components.ICascadingValueSupplier' from the root provider.
         services.AddTransient<HtmlRenderer>();

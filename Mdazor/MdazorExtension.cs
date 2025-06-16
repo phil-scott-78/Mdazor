@@ -40,7 +40,7 @@ public class MdazorExtension : IMarkdownExtension
             // We'll add the component renderers to the existing HtmlRenderer
             if (!htmlRenderer.ObjectRenderers.Contains<ComponentBlockRenderer>())
             {
-                htmlRenderer.ObjectRenderers.Add(new ComponentBlockRenderer(_componentRegistry, _serviceProvider));
+                htmlRenderer.ObjectRenderers.Add(new ComponentBlockRenderer(_componentRegistry, _serviceProvider, pipeline));
             }
             if (!htmlRenderer.ObjectRenderers.Contains<ComponentInlineRenderer>())
             {

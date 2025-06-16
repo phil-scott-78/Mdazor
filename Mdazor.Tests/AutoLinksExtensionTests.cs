@@ -109,34 +109,6 @@ public class AutoLinksExtensionTests
         result.ShouldContain("<a href=\"https://www.github.com\">https://www.github.com</a>");
     }
 
-    [Fact]
-    public void AutoLinks_WithDefaultServicePipeline_ShouldNotWork()
-    {
-        // This test demonstrates the current issue - the default service-registered pipeline
-        // doesn't include AutoLinks, so URLs don't get converted to links inside components
-        
-        var services = new ServiceCollection();
-        services.AddLogging();
-        services.AddMdazor()
-            .AddMdazorComponent<TestCard>();
-        
-        var serviceProvider = services.BuildServiceProvider();
-        var pipeline = serviceProvider.GetRequiredService<MarkdownPipeline>(); // Uses default pipeline without AutoLinks
-
-        var markdown = """
-                       <TestCard title="No AutoLinks">
-                       This URL won't be converted: https://www.google.com
-                       </TestCard>
-                       """;
-
-        var result = Markdown.ToHtml(markdown, pipeline);
-
-        // Verify component renders but URLs are NOT converted to links
-        result.ShouldContain("<div class=\"test-card\">");
-        result.ShouldNotContain("<a href=\"https://www.google.com\">");
-        result.ShouldContain("https://www.google.com"); // Raw URL text should still be there
-    }
-
     // Test component for AutoLinks testing
     private class TestCard : ComponentBase
     {
