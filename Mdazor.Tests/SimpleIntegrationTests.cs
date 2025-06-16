@@ -2,9 +2,7 @@ using Markdig;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Shouldly;
-using Xunit;
 
 namespace Mdazor.Tests;
 
@@ -16,17 +14,16 @@ public class SimpleIntegrationTests
         // Setup
         var services = new ServiceCollection();
         services.AddLogging();
-        services.AddSingleton<MarkdownPipeline>(new MarkdownPipelineBuilder()
-            .UseMdazor()
-            .Build());
+
         services.AddMdazor()
             .AddMdazorComponent<SimpleCard>()
             .AddMdazorComponent<SimpleAlert>();
 
         var serviceProvider = services.BuildServiceProvider();
         var componentRegistry = serviceProvider.GetRequiredService<IComponentRegistry>();
-        var pipeline = serviceProvider.GetRequiredService<MarkdownPipeline>();
-
+        var pipeline = new MarkdownPipelineBuilder()
+            .UseMdazor(serviceProvider)
+            .Build();
         // Test markdown with components
         var markdown = """
                        # Test Document
@@ -52,9 +49,6 @@ public class SimpleIntegrationTests
         var renderer = new BlazorRenderer(writer, componentRegistry, serviceProvider);
         renderer.Render(document);
         var result = writer.ToString();
-
-        // Verify
-        Console.WriteLine($"Rendered HTML:\n{result}");
         
         // Check basic markdown
         result.ShouldContain("<h1>Test Document</h1>");
@@ -117,13 +111,12 @@ public class SimpleIntegrationTests
         services.AddLogging();
         services.AddMdazor()
             .AddMdazorComponent<SimpleAlert>();
-        services.AddSingleton<MarkdownPipeline>(new MarkdownPipelineBuilder()
-            .UseMdazor()
-            .Build());
+
         var serviceProvider = services.BuildServiceProvider();
         var componentRegistry = serviceProvider.GetRequiredService<IComponentRegistry>();
-        var pipeline = serviceProvider.GetRequiredService<MarkdownPipeline>();
-
+        var pipeline = new MarkdownPipelineBuilder()
+            .UseMdazor(serviceProvider)
+            .Build();
         // Test both lowercase and capitalized attributes (as block elements)
         var markdown = """
                        <SimpleAlert type="info">
@@ -141,8 +134,6 @@ public class SimpleIntegrationTests
         var renderer = new BlazorRenderer(writer, componentRegistry, serviceProvider);
         renderer.Render(document);
         var result = writer.ToString();
-
-        Console.WriteLine($"Case insensitive test result:\n{result}");
 
         // Verify both work correctly
         result.ShouldContain("<div class=\"simple-alert info\">");

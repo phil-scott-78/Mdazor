@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components;
 using Shouldly;
-using Xunit;
 
 namespace Mdazor.Tests;
 

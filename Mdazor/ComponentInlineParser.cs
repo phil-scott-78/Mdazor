@@ -1,6 +1,5 @@
 using Markdig.Helpers;
 using Markdig.Parsers;
-using Markdig.Syntax.Inlines;
 using System.Text.RegularExpressions;
 
 namespace Mdazor;

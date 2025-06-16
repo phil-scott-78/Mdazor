@@ -9,88 +9,36 @@ using MarkdigHtmlRenderer = Markdig.Renderers.HtmlRenderer;
 
 namespace Mdazor;
 
-public class BlazorRenderer : MarkdigHtmlRenderer
+public class ComponentBlockRenderer : HtmlObjectRenderer<ComponentBlock>
 {
     private readonly IComponentRegistry _componentRegistry;
     private readonly IServiceProvider _serviceProvider;
 
-    public BlazorRenderer(TextWriter writer, IComponentRegistry componentRegistry, IServiceProvider serviceProvider) 
-        : base(writer)
+    public ComponentBlockRenderer(IComponentRegistry componentRegistry, IServiceProvider serviceProvider)
     {
         _componentRegistry = componentRegistry;
         _serviceProvider = serviceProvider;
-        
-        ObjectRenderers.Add(new ComponentBlockRenderer());
-        ObjectRenderers.Add(new ComponentInlineRenderer());
     }
 
-    private class ComponentBlockRenderer : HtmlObjectRenderer<ComponentBlock>
-    {
-        protected override void Write(MarkdigHtmlRenderer renderer, ComponentBlock block)
-        {
-            if (renderer is not BlazorRenderer blazorRenderer)
-            {
-                return;
-            }
-
-            blazorRenderer.WriteComponentBlock(block);
-        }
-    }
-
-    private class ComponentInlineRenderer : HtmlObjectRenderer<ComponentInline>
-    {
-        protected override void Write(MarkdigHtmlRenderer renderer, ComponentInline inline)
-        {
-            if (renderer is not BlazorRenderer blazorRenderer)
-            {
-                return;
-            }
-
-            blazorRenderer.WriteComponentInline(inline);
-        }
-    }
-
-    private void WriteComponentBlock(ComponentBlock block)
+    protected override void Write(MarkdigHtmlRenderer renderer, ComponentBlock block)
     {
         var componentType = _componentRegistry.GetComponentType(block.ComponentName);
         if (componentType == null)
         {
             // Render as normal HTML tag
-            WriteComponentAsHtml(block);
+            WriteComponentAsHtml(renderer, block);
             return;
         }
 
         try
         {
             var html = RenderComponentAsync(componentType, block.Attributes, block).GetAwaiter().GetResult();
-            Write(html);
+            renderer.Write(html);
         }
         catch (Exception ex)
         {
-            WriteComponentAsHtml(block);
-            Write($"<!-- Error rendering component {block.ComponentName}: {ex.Message} -->");
-        }
-    }
-
-    private void WriteComponentInline(ComponentInline inline)
-    {
-        var componentType = _componentRegistry.GetComponentType(inline.ComponentName);
-        if (componentType == null)
-        {
-            // Render as normal HTML tag
-            WriteComponentAsHtml(inline);
-            return;
-        }
-
-        try
-        {
-            var html = RenderComponentAsync(componentType, inline.Attributes, null).GetAwaiter().GetResult();
-            Write(html);
-        }
-        catch (Exception ex)
-        {
-            WriteComponentAsHtml(inline);
-            Write($"<!-- Error rendering component {inline.ComponentName}: {ex.Message} -->");
+            WriteComponentAsHtml(renderer, block);
+            renderer.Write($"<!-- Error rendering component {block.ComponentName}: {ex.Message} -->");
         }
     }
 
@@ -120,7 +68,7 @@ public class BlazorRenderer : MarkdigHtmlRenderer
             {
                 var childMarkdown = RenderChildContent(block);
                 var pipeline = new MarkdownPipelineBuilder().Use<MdazorExtension>().Build();
-                var childHtml = Markdown.ToHtml(childMarkdown, pipeline);
+                var childHtml = Markdig.Markdown.ToHtml(childMarkdown, pipeline);
                 
                 parameters["ChildContent"] = new RenderFragment(builder =>
                 {
@@ -150,42 +98,35 @@ public class BlazorRenderer : MarkdigHtmlRenderer
         return writer.ToString();
     }
 
-    private void WriteComponentAsHtml(ComponentBlock block)
+    private void WriteComponentAsHtml(MarkdigHtmlRenderer renderer, ComponentBlock block)
     {
-        Write($"<{block.ComponentName.ToLowerInvariant()}");
-        WriteAttributes(block.Attributes);
+        renderer.Write($"<{block.ComponentName.ToLowerInvariant()}");
+        WriteAttributes(renderer, block.Attributes);
         
         if (block.IsSelfClosing)
         {
-            Write(" />");
+            renderer.Write(" />");
         }
         else
         {
-            Write(">");
+            renderer.Write(">");
             
             // Render child content
             if (block.Count > 0)
             {
                 var childContent = RenderChildContent(block);
-                Write(childContent);
+                renderer.Write(childContent);
             }
             
-            Write($"</{block.ComponentName.ToLowerInvariant()}>");
+            renderer.Write($"</{block.ComponentName.ToLowerInvariant()}>");
         }
     }
 
-    private void WriteComponentAsHtml(ComponentInline inline)
-    {
-        Write($"<{inline.ComponentName.ToLowerInvariant()}");
-        WriteAttributes(inline.Attributes);
-        Write(" />");
-    }
-
-    private void WriteAttributes(Dictionary<string, string> attributes)
+    private void WriteAttributes(MarkdigHtmlRenderer renderer, Dictionary<string, string> attributes)
     {
         foreach (var attr in attributes)
         {
-            Write($" {attr.Key}=\"{HttpUtility.HtmlEncode(attr.Value)}\"");
+            renderer.Write($" {attr.Key}=\"{HttpUtility.HtmlEncode(attr.Value)}\"");
         }
     }
 

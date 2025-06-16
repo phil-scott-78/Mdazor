@@ -1,7 +1,6 @@
 using Markdig;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using Xunit;
 
 namespace Mdazor.Tests;
 
@@ -15,12 +14,11 @@ public class BlazorRendererTests
     {
         var services = new ServiceCollection();
         services.AddMdazor();
-        services.AddSingleton<MarkdownPipeline>(new MarkdownPipelineBuilder()
-            .UseMdazor()
-            .Build());
         _serviceProvider = services.BuildServiceProvider();
         _componentRegistry = _serviceProvider.GetRequiredService<IComponentRegistry>();
-        _pipeline = _serviceProvider.GetRequiredService<MarkdownPipeline>();
+        _pipeline = new MarkdownPipelineBuilder()
+            .UseMdazor(_serviceProvider)
+            .Build();
     }
 
     [Fact]

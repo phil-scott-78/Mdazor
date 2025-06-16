@@ -5,6 +5,19 @@ namespace Mdazor;
 
 public class MdazorExtension : IMarkdownExtension
 {
+    private readonly IComponentRegistry? _componentRegistry;
+    private readonly IServiceProvider? _serviceProvider;
+
+    public MdazorExtension()
+    {
+    }
+
+    public MdazorExtension(IComponentRegistry componentRegistry, IServiceProvider serviceProvider)
+    {
+        _componentRegistry = componentRegistry;
+        _serviceProvider = serviceProvider;
+    }
+
     public void Setup(MarkdownPipelineBuilder pipeline)
     {
         if (!pipeline.BlockParsers.Contains<ComponentBlockParser>())
@@ -20,6 +33,19 @@ public class MdazorExtension : IMarkdownExtension
 
     public void Setup(MarkdownPipeline pipeline, IMarkdownRenderer renderer)
     {
-        // Renderer setup is handled by BlazorRenderer
+        if (_componentRegistry != null && _serviceProvider != null && renderer is HtmlRenderer htmlRenderer)
+        {
+            // Replace the HtmlRenderer with our BlazorRenderer
+            // Note: This is a bit of a hack since we can't directly replace the renderer
+            // We'll add the component renderers to the existing HtmlRenderer
+            if (!htmlRenderer.ObjectRenderers.Contains<ComponentBlockRenderer>())
+            {
+                htmlRenderer.ObjectRenderers.Add(new ComponentBlockRenderer(_componentRegistry, _serviceProvider));
+            }
+            if (!htmlRenderer.ObjectRenderers.Contains<ComponentInlineRenderer>())
+            {
+                htmlRenderer.ObjectRenderers.Add(new ComponentInlineRenderer(_componentRegistry, _serviceProvider));
+            }
+        }
     }
 }

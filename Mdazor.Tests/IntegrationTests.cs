@@ -16,9 +16,6 @@ public class IntegrationTests
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        services.AddSingleton<MarkdownPipeline>(new MarkdownPipelineBuilder()
-            .UseMdazor()
-            .Build());
         services.AddMdazor()
             .AddMdazorComponent<TestCard>()
             .AddMdazorComponent<TestAlert>();
@@ -26,7 +23,9 @@ public class IntegrationTests
         
         _serviceProvider = services.BuildServiceProvider();
         _componentRegistry = _serviceProvider.GetRequiredService<IComponentRegistry>();
-        _pipeline = _serviceProvider.GetRequiredService<MarkdownPipeline>();
+        _pipeline = new MarkdownPipelineBuilder()
+            .UseMdazor(_serviceProvider)
+            .Build();
     }
 
     [Fact]

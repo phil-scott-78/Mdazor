@@ -111,14 +111,23 @@ services.AddMdazor()
 
 2. **Use it**:
 
+The simplest way is to use the pre-configured pipeline from DI:
+
+```csharp
+var pipeline = serviceProvider.GetRequiredService<MarkdownPipeline>();
+var html = Markdown.ToHtml(markdownContent, pipeline);
+```
+
+Or create your own pipeline:
+
 ```csharp
 var pipeline = new MarkdownPipelineBuilder()
-    .UseMdazor()
+    .UseMdazor(serviceProvider)
     .Build();
 var html = Markdown.ToHtml(markdownContent, pipeline);
 ```
 
-Or with the renderer directly:
+For advanced scenarios, you can still use the renderer directly:
 
 ```csharp
 var document = Markdown.Parse(markdownContent, pipeline);

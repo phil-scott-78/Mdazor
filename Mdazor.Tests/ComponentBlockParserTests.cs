@@ -1,7 +1,5 @@
 using Markdig;
-using Markdig.Parsers;
 using Shouldly;
-using Xunit;
 
 namespace Mdazor.Tests;
 

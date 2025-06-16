@@ -25,7 +25,13 @@ public static class ServiceCollectionExtensions
         // Cannot resolve scoped service 'Microsoft.AspNetCore.Components.ICascadingValueSupplier' from the root provider.
         services.AddTransient<HtmlRenderer>();
         
-
+        // Register a pre-configured MarkdownPipeline that supports components
+        services.AddSingleton<MarkdownPipeline>(serviceProvider =>
+        {
+            return new MarkdownPipelineBuilder()
+                .UseMdazor(serviceProvider)
+                .Build();
+        });
 
         return services;
     }

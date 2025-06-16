@@ -17,16 +17,12 @@
     protected override async Task OnInitializedAsync()
     {
         var pipeline = new MarkdownPipelineBuilder()
-            .UseMdazor()
+            .UseMdazor(ServiceProvider)
             .Build();
         
         var document = Markdown.Parse(_markdownContent, pipeline);
+        RenderedContent = document.ToHtml(pipeline);
 
-        await using var writer = new StringWriter();
-        var blazorRenderer = new BlazorRenderer(writer, ComponentRegistry, ServiceProvider);
-            
-        blazorRenderer.Render(document);
-        RenderedContent = writer.ToString();
         await base.OnInitializedAsync();
     }
 
