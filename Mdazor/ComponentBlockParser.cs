@@ -79,6 +79,10 @@ public partial class ComponentBlockParser : BlockParser
             return BlockState.BreakDiscard;
         }
 
+        // Preserve original column position to maintain indentation
+        // This ensures whitespace is preserved for nested content like lists and code blocks
+        processor.GoToColumn(processor.ColumnBeforeIndent);
+
         // Continue parsing content
         return BlockState.Continue;
     }
