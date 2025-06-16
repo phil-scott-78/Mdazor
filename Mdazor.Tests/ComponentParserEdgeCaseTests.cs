@@ -241,7 +241,7 @@ public class ComponentParserEdgeCaseTests
         var document = Markdown.Parse(markdown, _pipeline);
         
         using var writer = new StringWriter();
-        var renderer = new BlazorRenderer(writer, _componentRegistry, _serviceProvider);
+        var renderer = new BlazorRenderer(writer, _componentRegistry, _serviceProvider, _pipeline);
         renderer.Render(document);
         
         return writer.ToString().Trim();

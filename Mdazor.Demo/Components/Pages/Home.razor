@@ -16,8 +16,9 @@
     protected override async Task OnInitializedAsync()
     {
         var pipeline = new MarkdownPipelineBuilder()
-            .UseAutoLinks()
             .UseMdazor(ServiceProvider)
+
+            .UseAutoLinks()
             .Build();
         
         var document = Markdown.Parse(_markdownContent, pipeline);

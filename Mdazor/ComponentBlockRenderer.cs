@@ -90,7 +90,7 @@ public class ComponentBlockRenderer : HtmlObjectRenderer<ComponentBlock>
     private string RenderChildContent(ComponentBlock block)
     {
         using var writer = new StringWriter();
-        var childRenderer = new BlazorRenderer(writer, _componentRegistry, _serviceProvider);
+        var childRenderer = new BlazorRenderer(writer, _componentRegistry, _serviceProvider, _pipeline);
         
         foreach (var child in block)
         {

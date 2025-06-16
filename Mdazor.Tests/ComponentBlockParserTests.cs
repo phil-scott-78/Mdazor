@@ -1,4 +1,5 @@
 using Markdig;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
 namespace Mdazor.Tests;
@@ -9,8 +10,13 @@ public class ComponentBlockParserTests
 
     public ComponentBlockParserTests()
     {
+        var services = new ServiceCollection();
+        services.AddMdazor();
+
+        var serviceProvider = services.BuildServiceProvider();
+        var componentRegistry = serviceProvider.GetRequiredService<IComponentRegistry>();
         _pipeline = new MarkdownPipelineBuilder()
-            .Use<MdazorExtension>()
+            .UseMdazor(serviceProvider)
             .Build();
     }
 

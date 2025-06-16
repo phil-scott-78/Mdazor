@@ -28,7 +28,7 @@ public class BlazorRendererTests
         var document = Markdown.Parse(markdown, _pipeline);
 
         using var writer = new StringWriter();
-        var renderer = new BlazorRenderer(writer, _componentRegistry, _serviceProvider);
+        var renderer = new BlazorRenderer(writer, _componentRegistry, _serviceProvider, _pipeline);
         renderer.Render(document);
         var result = writer.ToString();
 
@@ -44,7 +44,7 @@ Some content
         var document = Markdown.Parse(markdown, _pipeline);
 
         using var writer = new StringWriter();
-        var renderer = new BlazorRenderer(writer, _componentRegistry, _serviceProvider);
+        var renderer = new BlazorRenderer(writer, _componentRegistry, _serviceProvider, _pipeline);
         renderer.Render(document);
         var result = writer.ToString();
 

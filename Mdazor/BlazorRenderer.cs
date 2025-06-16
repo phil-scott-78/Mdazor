@@ -13,13 +13,15 @@ public class BlazorRenderer : MarkdigHtmlRenderer
 {
     private readonly IComponentRegistry _componentRegistry;
     private readonly IServiceProvider _serviceProvider;
+    private readonly MarkdownPipeline _pipeline;
 
-    public BlazorRenderer(TextWriter writer, IComponentRegistry componentRegistry, IServiceProvider serviceProvider) 
+    public BlazorRenderer(TextWriter writer, IComponentRegistry componentRegistry, IServiceProvider serviceProvider, MarkdownPipeline pipeline) 
         : base(writer)
     {
         _componentRegistry = componentRegistry;
         _serviceProvider = serviceProvider;
-        
+        _pipeline = pipeline;
+
         ObjectRenderers.Add(new ComponentBlockRenderer());
         ObjectRenderers.Add(new ComponentInlineRenderer());
     }
@@ -119,8 +121,7 @@ public class BlazorRenderer : MarkdigHtmlRenderer
             if (childContentProperty != null)
             {
                 var childMarkdown = RenderChildContent(block);
-                var pipeline = new MarkdownPipelineBuilder().Use<MdazorExtension>().Build();
-                var childHtml = Markdown.ToHtml(childMarkdown, pipeline);
+                var childHtml = Markdown.ToHtml(childMarkdown, _pipeline);
                 
                 parameters["ChildContent"] = new RenderFragment(builder =>
                 {
@@ -140,7 +141,7 @@ public class BlazorRenderer : MarkdigHtmlRenderer
     private string RenderChildContent(ComponentBlock block)
     {
         using var writer = new StringWriter();
-        var childRenderer = new BlazorRenderer(writer, _componentRegistry, _serviceProvider);
+        var childRenderer = new BlazorRenderer(writer, _componentRegistry, _serviceProvider, _pipeline);
         
         foreach (var child in block)
         {

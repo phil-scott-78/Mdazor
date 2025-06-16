@@ -46,7 +46,7 @@ public class SimpleIntegrationTests
         // Execute
         var document = Markdown.Parse(markdown, pipeline);
         using var writer = new StringWriter();
-        var renderer = new BlazorRenderer(writer, componentRegistry, serviceProvider);
+        var renderer = new BlazorRenderer(writer, componentRegistry, serviceProvider, pipeline);
         renderer.Render(document);
         var result = writer.ToString();
         
@@ -131,7 +131,7 @@ public class SimpleIntegrationTests
         // Execute
         var document = Markdown.Parse(markdown, pipeline);
         using var writer = new StringWriter();
-        var renderer = new BlazorRenderer(writer, componentRegistry, serviceProvider);
+        var renderer = new BlazorRenderer(writer, componentRegistry, serviceProvider, pipeline);
         renderer.Render(document);
         var result = writer.ToString();
 
