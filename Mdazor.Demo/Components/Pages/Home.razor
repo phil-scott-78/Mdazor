@@ -16,6 +16,7 @@
     protected override async Task OnInitializedAsync()
     {
         var pipeline = new MarkdownPipelineBuilder()
+            .UseAutoLinks()
             .UseMdazor(ServiceProvider)
             .Build();
         
@@ -35,9 +36,10 @@ This is **bold** text and this is *italic*.
 
 - List item 1
 - List item 2
+- https://github.com
 
 <Alert type=""info"">
-Nested component with **markdown**!
+Nested component with **markdown** https://github.com!
 </Alert>
 
 More content here.

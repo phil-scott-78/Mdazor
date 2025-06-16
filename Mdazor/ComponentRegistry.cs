@@ -28,7 +28,7 @@ public class ComponentRegistry : IComponentRegistry
 
     public Type? GetComponentType(string name)
     {
-        return _components.TryGetValue(name, out var type) ? type : null;
+        return _components.GetValueOrDefault(name);
     }
 
     public bool IsRegistered(string name)
