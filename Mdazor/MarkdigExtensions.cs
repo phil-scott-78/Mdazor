@@ -14,7 +14,13 @@ public static class MarkdigExtensions
     /// <returns>The Markdig pipeline with the Mdazor extension added.</returns>
     public static MarkdownPipelineBuilder UseMdazor(this MarkdownPipelineBuilder pipeline, IServiceProvider serviceProvider)
     {
-        var componentRegistry = serviceProvider.GetRequiredService<IComponentRegistry>();
+        var componentRegistry = serviceProvider.GetService<IComponentRegistry>();
+        if (componentRegistry == null)
+        {
+            // not sure if we should warn or throw here
+            return pipeline;
+        }
+        
         pipeline.Extensions.AddIfNotAlready(new MdazorExtension(componentRegistry, serviceProvider));
         return pipeline;
     }

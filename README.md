@@ -98,24 +98,7 @@ And here's a nested component:
 - Lists work too
 - **Bold text**
 - Everything you'd expect
-  </AlertBox>
-```
-
-### Case-insensitive attributes
-
-Both of these work the same:
-
-```markdown
-<Alert type="warning">...</Alert>
-<Alert Type="warning">...</Alert>
-```
-
-### Hyphenated attributes
-
-HTML-style attributes work fine:
-
-```markdown
-<Widget data-id="123" aria-label="My Widget" />
+</AlertBox>
 ```
 
 ### Fallback for unknown components
@@ -126,7 +109,7 @@ If a component isn't registered, it just renders as HTML:
 <SomeUnknownWidget foo="bar">content</SomeUnknownWidget>
 ```
 
-Becomes: `<someunknownwidget foo="bar">content</someunknownwidget>`
+Becomes: `<someunknownwidget foo="bar">content</someunknownwidget>` with the error message as an HTML comment.
 
 ## Setup
 
@@ -141,14 +124,7 @@ services.AddMdazor()
 
 2. **Use it**:
 
-The simplest way is to use the pre-configured pipeline from DI:
-
-```csharp
-var pipeline = serviceProvider.GetRequiredService<MarkdownPipeline>();
-var html = Markdown.ToHtml(markdownContent, pipeline);
-```
-
-Or create your own pipeline:
+Create your own pipeline, ensuring to inject your service provider so we can find the components:
 
 ```csharp
 var pipeline = new MarkdownPipelineBuilder()
@@ -177,6 +153,25 @@ var html = writer.ToString();
 
 ## Limitations
 
+- It doesn't handle whitespace all that great. If you are using a markdown element that relies on precise whitespace such as a code element or blockquote, don't indent your tags e.g.
+    
+    Do this:
+    ``````
+    <Card>
+    ```csharp
+    var i = 2 + 2;
+    ```
+    </Card>
+    ``````
+
+    Not this:
+    ``````
+    <Card>
+        ```csharp
+        var i = 2 + 2;
+        ```
+    </Card>
+    ``````
 - Server-side rendering only (no client-side Blazor support yet)
 - Components need to be registered ahead of time
 - No support for complex parameter types (just strings, numbers, bools for now)
@@ -204,6 +199,7 @@ This is a skunkworks project, so don't expect enterprise-level polish. But if yo
 The main areas that could use work:
 
 - Support for more complex parameter types
+- Fixing the aforementioned whitespace problems
 - Client-side Blazor support
 - Better error handling and diagnostics
 - Performance optimizations

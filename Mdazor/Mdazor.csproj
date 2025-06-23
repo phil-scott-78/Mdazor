@@ -10,8 +10,8 @@
         <Authors>Phil Scott</Authors>
         <Description>A Markdig extension that lets you embed Blazor components directly in Markdown.</Description>
         <PackageTags>markdig;blazor;markdown;components;documentation;razor</PackageTags>
-        <PackageProjectUrl>https://github.com/mdazor/mdazor</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/mdazor/mdazor</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/phil-scott-78/Mdazor</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/phil-scott-78/Mdazor</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
