@@ -1,21 +1,18 @@
-<div class="card mb-3">
-    @if (!string.IsNullOrEmpty(Title))
-    {
-        <div class="card-header">
-            <h5 class="card-title mb-0">@Title</h5>
-            @if (!string.IsNullOrEmpty(Subtitle))
-            {
-                <small class="text-muted">@Subtitle</small>
-            }
-        </div>
-    }
-    <div class="card-body">
+<div class="group relative rounded-xl border border-primary-200 dark:border-primary-800 bg-primary-200/50 dark:bg-primary-500/10">
+    <div class="relative overflow-hidden rounded-xl p-6">
+        @if (Icon != null)
+        {
+                @Icon
+        }
+        <h2 class="font-display font-bold text-base-50 pb-2" >@Title</h2>
+        <div class="text-sm">
         @ChildContent
+        </div>
     </div>
 </div>
 
 @code {
-    [Parameter] public string? Title { get; set; }
-    [Parameter] public string? Subtitle { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? Icon { get; set; }
+    [Parameter] public string? Title { get; set; }
 }

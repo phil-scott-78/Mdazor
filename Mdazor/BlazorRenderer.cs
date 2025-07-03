@@ -130,10 +130,62 @@ public class BlazorRenderer : MarkdigHtmlRenderer
         // Handle child content for block components
         if (block is { IsSelfClosing: false, Count: > 0 })
         {
-            var childContentProperty = componentType.GetProperty("ChildContent");
-            if (childContentProperty != null)
+            // Get all RenderFragment properties from the component
+            var renderFragmentProperties = componentType.GetProperties()
+                .Where(p => p.PropertyType == typeof(RenderFragment) || 
+                           (p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>) && 
+                            Nullable.GetUnderlyingType(p.PropertyType) == typeof(RenderFragment)))
+                .ToList();
+            
+            var namedRenderFragments = new Dictionary<string, List<Block>>();
+            var childContentBlocks = new List<Block>();
+            
+            // Parse child blocks to identify named RenderFragment content
+            foreach (var child in block)
             {
-                var childHtml = RenderChildContent(block, sourceRenderer);
+                if (child is ComponentBlock childComponent)
+                {
+                    var matchingProperty = renderFragmentProperties.FirstOrDefault(p => 
+                        string.Equals(p.Name, childComponent.ComponentName, StringComparison.OrdinalIgnoreCase));
+                    
+                    if (matchingProperty != null)
+                    {
+                        if (!namedRenderFragments.ContainsKey(matchingProperty.Name))
+                        {
+                            namedRenderFragments[matchingProperty.Name] = new List<Block>();
+                        }
+                        
+                        // Add the content inside the named RenderFragment element
+                        namedRenderFragments[matchingProperty.Name].AddRange(childComponent);
+                        continue;
+                    }
+                }
+                
+                // Add to regular child content if not a named RenderFragment
+                childContentBlocks.Add(child);
+            }
+            
+            // Create RenderFragment parameters for named fragments
+            foreach (var kvp in namedRenderFragments)
+            {
+                var propertyName = kvp.Key;
+                var blocks = kvp.Value;
+                
+                if (blocks.Count > 0)
+                {
+                    var html = RenderBlocks(blocks, sourceRenderer);
+                    parameters[propertyName] = new RenderFragment(builder =>
+                    {
+                        builder.AddMarkupContent(0, html);
+                    });
+                }
+            }
+            
+            // Handle remaining content as ChildContent
+            var childContentProperty = componentType.GetProperty("ChildContent");
+            if (childContentProperty != null && childContentBlocks.Count > 0)
+            {
+                var childHtml = RenderBlocks(childContentBlocks, sourceRenderer);
                 
                 parameters["ChildContent"] = new RenderFragment(builder =>
                 {
@@ -158,6 +210,19 @@ public class BlazorRenderer : MarkdigHtmlRenderer
         foreach (var child in block)
         {
             childRenderer.Render(child);
+        }
+        
+        return writer.ToString();
+    }
+    
+    private string RenderBlocks(IEnumerable<Block> blocks, MarkdigHtmlRenderer sourceRenderer)
+    {
+        using var writer = new StringWriter();
+        var childRenderer = new BlazorRenderer(writer, _componentRegistry, _serviceProvider, _pipeline, sourceRenderer);
+        
+        foreach (var block in blocks)
+        {
+            childRenderer.Render(block);
         }
         
         return writer.ToString();

@@ -10,7 +10,8 @@
       "Bash(dotnet restore:*)",
       "Bash(mkdir:*)",
       "Bash(dotnet build:*)",
-      "WebFetch(domain:raw.githubusercontent.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(rm:*)"
     ],
     "deny": []
   }
