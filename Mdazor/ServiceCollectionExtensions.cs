@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddMdazor(this IServiceCollection services)
     {
         // Register the component registrations holder as singleton if not already registered
-        if (!services.Any(x => x.ServiceType == typeof(ComponentRegistrationsHolder)))
+        if (services.All(x => x.ServiceType != typeof(ComponentRegistrationsHolder)))
         {
             services.AddSingleton<ComponentRegistrationsHolder>();
         }
@@ -57,7 +57,7 @@ public static class ServiceCollectionExtensions
     private static void AddComponentRegistration(this IServiceCollection services, Action<IComponentRegistry> registration)
     {
         // Ensure the holder is registered
-        if (!services.Any(x => x.ServiceType == typeof(ComponentRegistrationsHolder)))
+        if (services.All(x => x.ServiceType != typeof(ComponentRegistrationsHolder)))
         {
             services.AddSingleton<ComponentRegistrationsHolder>();
         }

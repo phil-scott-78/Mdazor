@@ -77,7 +77,7 @@ public class BlazorRenderer : MarkdigHtmlRenderer
 
         try
         {
-            var html = RenderComponentAsync(componentType, block.Attributes, block, sourceRenderer).GetAwaiter().GetResult();
+            var html = AsyncHelper.RunSync(() => RenderComponentAsync(componentType, block.Attributes, block, sourceRenderer));
             Write(html);
         }
         catch (Exception ex)
@@ -99,7 +99,7 @@ public class BlazorRenderer : MarkdigHtmlRenderer
 
         try
         {
-            var html = RenderComponentAsync(componentType, inline.Attributes, null, sourceRenderer).GetAwaiter().GetResult();
+            var html = AsyncHelper.RunSync(() => RenderComponentAsync(componentType, inline.Attributes, null, sourceRenderer));
             Write(html);
         }
         catch (Exception ex)

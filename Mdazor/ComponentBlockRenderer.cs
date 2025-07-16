@@ -35,7 +35,7 @@ public class ComponentBlockRenderer : HtmlObjectRenderer<ComponentBlock>
 
         try
         {
-            var html = RenderComponentAsync(componentType, block.Attributes, block, renderer).GetAwaiter().GetResult();
+            var html = AsyncHelper.RunSync(() => RenderComponentAsync(componentType, block.Attributes, block, renderer));
             renderer.Write(html);
         }
         catch (Exception ex)

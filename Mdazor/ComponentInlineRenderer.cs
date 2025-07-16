@@ -31,7 +31,7 @@ public class ComponentInlineRenderer : HtmlObjectRenderer<ComponentInline>
 
         try
         {
-            var html = RenderComponentAsync(componentType, inline.Attributes).GetAwaiter().GetResult();
+            var html = AsyncHelper.RunSync(() => RenderComponentAsync(componentType, inline.Attributes));
             renderer.Write(html);
         }
         catch (Exception ex)
