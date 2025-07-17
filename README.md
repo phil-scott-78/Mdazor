@@ -1,6 +1,6 @@
 # Mdazor
 
-A Markdig extension that lets you embed Blazor components directly in Markdown.
+A Markdig extension that lets you embed Razor components directly in Markdown for server-side rendering.
 
 ## What is this?
 
@@ -12,7 +12,7 @@ Ever wanted to write Markdown like this:
 Here's some regular markdown content.
 
 <AlertCard type="warning">
-This is a **real Blazor component** with Markdown content inside!
+This is a **real Razor component** with Markdown content inside!
 
 - It supports lists
 - And *formatting*
@@ -24,31 +24,31 @@ This is a **real Blazor component** with Markdown content inside!
 More regular markdown continues here...
 ```
 
-And have it actually render real Blazor components? That's what this does.
+And have it actually render real Razor components server-side? That's what this does.
 
 ## Why does this exist?
 
 Writing documentation with static Markdown is fine, but sometimes you want to:
 
-- Generate content programmatically
-- Embed actual UI components in your docs
+- Generate content programmatically using server-side Razor components
+- Embed actual rendered UI components in your docs
 
 ## How it works
 
 This is a custom Markdig extension that:
 
 1. **Parses component tags** - Recognizes `<ComponentName prop="value">content</ComponentName>` syntax in your Markdown
-2. **Uses Blazor's HtmlRenderer** - Actually renders real Blazor components server-side
+2. **Uses Blazor's HtmlRenderer** - Actually renders real Razor components server-side into static HTML
 3. **Handles nested content** - Markdown inside components gets processed recursively
 5. **Graceful fallback** - Unknown components just render as regular HTML tags
 
 The magic happens in the parsing phase - we intercept component-looking tags before they get processed as regular HTML,
-instantiate actual Blazor components, and render them using Blazor's server-side rendering.
+instantiate actual Razor components, and render them using Blazor's server-side rendering to produce static HTML output.
 
 
 ## Example Components
 
-Your components just need to be normal Blazor components:
+Your components just need to be normal Razor components:
 
 ```razor
 @{
@@ -145,7 +145,7 @@ var html = writer.ToString();
 
 ## Technical Notes
 
-- Uses Blazor's `HtmlRenderer` for actual server-side component rendering
+- Uses Blazor's `HtmlRenderer` for actual server-side component rendering into static HTML
 - Component parameters are mapped using reflection with case-insensitive matching
 - Nested Markdown content is processed recursively using the same pipeline
 - Async rendering is fully supported
@@ -172,7 +172,7 @@ var html = writer.ToString();
         ```
     </Card>
     ``````
-- Server-side rendering only (no client-side Blazor support yet)
+- Server-side rendering only (components render to static HTML)
 - Components need to be registered ahead of time
 - No support for complex parameter types (just strings, numbers, bools for now)
 - Component names must start with a capital letter (follows HTML custom element rules)
