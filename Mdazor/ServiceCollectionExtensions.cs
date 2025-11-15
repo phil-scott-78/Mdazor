@@ -17,10 +17,10 @@ public static class ServiceCollectionExtensions
         // Register the component registrations holder as singleton if not already registered
         if (services.All(x => x.ServiceType != typeof(ComponentRegistrationsHolder)))
         {
-            services.AddSingleton<ComponentRegistrationsHolder>();
+            services = services.AddSingleton<ComponentRegistrationsHolder>();
         }
 
-        services.AddSingleton<IComponentRegistry>(serviceProvider =>
+        services = services.AddSingleton<IComponentRegistry>(serviceProvider =>
         {
             var registry = new ComponentRegistry();
             var holder = serviceProvider.GetRequiredService<ComponentRegistrationsHolder>();
@@ -35,31 +35,31 @@ public static class ServiceCollectionExtensions
 
         // critical this is transient, otherwise you'll get issues like DI throwing
         // Cannot resolve scoped service 'Microsoft.AspNetCore.Components.ICascadingValueSupplier' from the root provider.
-        services.AddTransient<HtmlRenderer>();
+        services = services.AddTransient<HtmlRenderer>();
 
         return services;
     }
 
     public static IServiceCollection AddMdazorComponent<T>(this IServiceCollection services) where T : ComponentBase
     {
-        services.AddTransient<T>();
-        services.AddComponentRegistration(registry => registry.RegisterComponent<T>());
+        services = services.AddTransient<T>();
+        services = services.AddComponentRegistration(registry => registry.RegisterComponent<T>());
         return services;
     }
 
     public static IServiceCollection AddMdazorComponent<T>(this IServiceCollection services, string name) where T : ComponentBase
     {
-        services.AddTransient<T>();
-        services.AddComponentRegistration(registry => registry.RegisterComponent<T>(name));
+        services = services.AddTransient<T>();
+        services = services.AddComponentRegistration(registry => registry.RegisterComponent<T>(name));
         return services;
     }
 
-    private static void AddComponentRegistration(this IServiceCollection services, Action<IComponentRegistry> registration)
+    private static IServiceCollection AddComponentRegistration(this IServiceCollection services, Action<IComponentRegistry> registration)
     {
         // Ensure the holder is registered
         if (services.All(x => x.ServiceType != typeof(ComponentRegistrationsHolder)))
         {
-            services.AddSingleton<ComponentRegistrationsHolder>();
+            services = services.AddSingleton<ComponentRegistrationsHolder>();
         }
 
         // Find the holder service descriptor and add to its registrations
@@ -74,7 +74,9 @@ public static class ServiceCollectionExtensions
             services.Remove(holderDescriptor);
             var newHolder = new ComponentRegistrationsHolder();
             newHolder.Registrations.Add(registration);
-            services.AddSingleton(newHolder);
+            services = services.AddSingleton(newHolder);
         }
+
+        return services;
     }
 }
