@@ -33,7 +33,8 @@ public partial class ComponentBlockParser : BlockParser
             {
                 ComponentName = componentName,
                 Attributes = attributes,
-                IsSelfClosing = true
+                IsSelfClosing = true,
+                OpeningColumn = processor.Column
             };
 
             processor.NewBlocks.Push(componentBlock);
@@ -52,7 +53,8 @@ public partial class ComponentBlockParser : BlockParser
             {
                 ComponentName = componentName,
                 Attributes = attributes,
-                IsSelfClosing = false
+                IsSelfClosing = false,
+                OpeningColumn = processor.Column
             };
 
             processor.NewBlocks.Push(componentBlock);
@@ -79,9 +81,19 @@ public partial class ComponentBlockParser : BlockParser
             return BlockState.BreakDiscard;
         }
 
-        // Preserve original column position to maintain indentation
-        // This ensures whitespace is preserved for nested content like lists and code blocks
-        processor.GoToColumn(processor.ColumnBeforeIndent);
+        // Rewind only as far as this component's own opening column. Leading
+        // whitespace UP TO the component's indent is consumed (so a nested
+        // component opened at column 2 strips two leading spaces from its
+        // children's lines), but anything beyond that is preserved so child
+        // markdown — lists, fenced code, blockquotes — sees its original
+        // relative indent. Going all the way back to ColumnBeforeIndent (= 0)
+        // would expose every leading space and turn 4-space-indented child
+        // content into a CommonMark indented code block.
+        var targetColumn = Math.Min(processor.Column, componentBlock.OpeningColumn);
+        if (targetColumn != processor.Column)
+        {
+            processor.GoToColumn(targetColumn);
+        }
 
         // Continue parsing content
         return BlockState.Continue;
