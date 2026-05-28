@@ -69,6 +69,48 @@ public class ComponentBlockParserTests
     }
 
     [Fact]
+    public void ParseSingleQuoteInsideDoubleQuotedValue_ShouldKeepFullValue()
+    {
+        var markdown = """
+                       <Badge Text="How's it going?" />
+                       """;
+
+        var document = Markdown.Parse(markdown, _pipeline);
+
+        var block = document[0].ShouldBeOfType<ComponentBlock>();
+        block.Attributes.ShouldContainKeyAndValue("Text", "How's it going?");
+    }
+
+    [Fact]
+    public void ParseSingleQuoteInsideDoubleQuotedValue_OpenTag_ShouldKeepFullValue()
+    {
+        var markdown = """
+                       <Badge Text="How's it going?">
+                       Content
+                       </Badge>
+                       """;
+
+        var document = Markdown.Parse(markdown, _pipeline);
+
+        var block = document[0].ShouldBeOfType<ComponentBlock>();
+        block.IsSelfClosing.ShouldBeFalse();
+        block.Attributes.ShouldContainKeyAndValue("Text", "How's it going?");
+    }
+
+    [Fact]
+    public void ParseDoubleQuoteInsideSingleQuotedValue_ShouldKeepFullValue()
+    {
+        var markdown = """
+                       <Badge Text='Say "hi" now' />
+                       """;
+
+        var document = Markdown.Parse(markdown, _pipeline);
+
+        var block = document[0].ShouldBeOfType<ComponentBlock>();
+        block.Attributes.ShouldContainKeyAndValue("Text", "Say \"hi\" now");
+    }
+
+    [Fact]
     public void ParseInvalidTag_ShouldNotCreateComponentBlock()
     {
         var markdown = """

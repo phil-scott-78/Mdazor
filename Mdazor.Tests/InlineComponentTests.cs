@@ -98,6 +98,30 @@ public class InlineComponentTests
     }
 
     [Fact]
+    public void InlineComponent_SingleQuoteInsideDoubleQuotedValue_ShouldRenderFullValue()
+    {
+        var markdown = """
+                       Status: <TestBadge text="How's it going?" color="green" />
+                       """;
+
+        var result = RenderMarkdown(markdown);
+
+        result.ShouldContain("<span class=\"badge badge-green\">How&#x27;s it going?</span>");
+    }
+
+    [Fact]
+    public void InlineComponent_DoubleQuoteInsideSingleQuotedValue_ShouldRenderFullValue()
+    {
+        var markdown = """
+                       Status: <TestBadge text='Say "hi" now' color="green" />
+                       """;
+
+        var result = RenderMarkdown(markdown);
+
+        result.ShouldContain("<span class=\"badge badge-green\">Say &quot;hi&quot; now</span>");
+    }
+
+    [Fact]
     public void InlineComponent_MultipleinSameParagraph_ShouldRender()
     {
         var markdown = """

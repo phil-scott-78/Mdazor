@@ -107,7 +107,7 @@ public partial class ComponentBlockParser : BlockParser
         foreach (Match match in matches)
         {
             var name = match.Groups[1].Value;
-            var value = System.Web.HttpUtility.HtmlDecode(match.Groups[2].Value);
+            var value = System.Web.HttpUtility.HtmlDecode(match.Groups[3].Value);
             attributes[name] = value;
         }
 
@@ -120,6 +120,6 @@ public partial class ComponentBlockParser : BlockParser
     private static partial Regex ComponentSelfClosingTagRegexDef();
     [GeneratedRegex("""^</([A-Z][a-zA-Z0-9]*)>\s*$""", RegexOptions.Compiled)]
     private static partial Regex ComponentCloseTagRegexDev();
-    [GeneratedRegex("([\\w-]+)=[\"']([^\"']*)[\"']", RegexOptions.Compiled)]
+    [GeneratedRegex("([\\w-]+)=([\"'])(.*?)\\2", RegexOptions.Compiled)]
     private static partial Regex AttributeRegexDef();
 }
