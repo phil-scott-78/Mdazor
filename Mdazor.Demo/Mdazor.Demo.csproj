@@ -9,11 +9,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Markdig" Version="0.41.2"/>
+        <PackageReference Include="Markdig" Version="0.41.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.6" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="../Mdazor/Mdazor.csproj"/>
+        <ProjectReference Include="../Mdazor/Mdazor.csproj" />
+        <ProjectReference Include="../Mdazor.Demo.Client/Mdazor.Demo.Client.csproj" />
     </ItemGroup>
 
     <ItemGroup>

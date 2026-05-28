@@ -54,7 +54,7 @@ public class ComponentInlineRenderer : HtmlObjectRenderer<ComponentInline>
             var property = componentType.GetProperty(attr.Key, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
             if (property != null && property.CanWrite)
             {
-                var value = ConvertAttributeValue(attr.Value, property.PropertyType);
+                var value = AttributeConverter.Convert(attr.Value, property.PropertyType);
                 parameters[property.Name] = value; // Use the actual property name, not the attribute name
             }
         }
@@ -82,13 +82,4 @@ public class ComponentInlineRenderer : HtmlObjectRenderer<ComponentInline>
         }
     }
 
-    private static object? ConvertAttributeValue(string value, Type targetType)
-    {
-        if (targetType == typeof(string)) return value;
-        if (targetType == typeof(int) && int.TryParse(value, out var intValue)) return intValue;
-        if (targetType == typeof(bool) && bool.TryParse(value, out var boolValue)) return boolValue;
-        if (targetType == typeof(double) && double.TryParse(value, out var doubleValue)) return doubleValue;
-
-        return value;
-    }
 }

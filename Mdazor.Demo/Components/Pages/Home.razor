@@ -1,32 +1,14 @@
 @page "/"
-@using Markdig
-@inject IServiceProvider ServiceProvider
 <PageTitle>Mdazor Demo</PageTitle>
 
 <div class="container mt-4">
     <h1>Mdazor Demo</h1>
     <p>This demonstrates Blazor components embedded in Markdown using Mdazor.</p>
-    
-    @((MarkupString) RenderedContent)
+
+    <MdazorContent Markdown="@_markdownContent" />
 </div>
 
 @code {
-    string RenderedContent { get; set; } = string.Empty;
-    
-    protected override async Task OnInitializedAsync()
-    {
-        var pipeline = new MarkdownPipelineBuilder()
-            .UseMdazor(ServiceProvider)
-
-            .UseAutoLinks()
-            .Build();
-        
-        var document = Markdown.Parse(_markdownContent, pipeline);
-        RenderedContent = document.ToHtml(pipeline);
-
-        await base.OnInitializedAsync();
-    }
-
     private readonly string _markdownContent = @"
 # Welcome to Mdazor
 
@@ -46,6 +28,12 @@ An inflexible and opinionated static content generator written in .NET.
 This is a **warning** alert outside the card!
 </Alert>
 
+## Interactive C# in WebAssembly
 
+The component below runs **in your browser** via Blazor WebAssembly — paragraphs around it stay statically prerendered.
+
+<CSharpRepl InitialCode=""Console.WriteLine(&quot;Hello from WASM!&quot;);"" />
+
+Back to plain markdown after the interactive island. *Everything else* on this page is static HTML produced at request time.
 ";
 }

@@ -58,7 +58,7 @@ public class ComponentBlockRenderer : HtmlObjectRenderer<ComponentBlock>
             var property = componentType.GetProperty(attr.Key, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
             if (property != null && property.CanWrite)
             {
-                var value = ConvertAttributeValue(attr.Value, property.PropertyType);
+                var value = AttributeConverter.Convert(attr.Value, property.PropertyType);
                 parameters[property.Name] = value; // Use the actual property name, not the attribute name
             }
         }
@@ -66,63 +66,22 @@ public class ComponentBlockRenderer : HtmlObjectRenderer<ComponentBlock>
         // Handle child content for block components
         if (block is { IsSelfClosing: false, Count: > 0 })
         {
-            // Get all RenderFragment properties from the component
-            var renderFragmentProperties = componentType.GetProperties()
-                .Where(p => p.PropertyType == typeof(RenderFragment) || 
-                           (p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>) && 
-                            Nullable.GetUnderlyingType(p.PropertyType) == typeof(RenderFragment)))
-                .ToList();
-            
-            var namedRenderFragments = new Dictionary<string, List<Block>>();
-            var childContentBlocks = new List<Block>();
-            
-            // Parse child blocks to identify named RenderFragment content
-            foreach (var child in block)
+            var split = ChildContentSplitter.Split(componentType, block);
+
+            foreach (var (propertyName, blocks) in split.NamedFragments)
             {
-                if (child is ComponentBlock childComponent)
+                if (blocks.Count == 0) continue;
+                var html = RenderBlocks(blocks, sourceRenderer);
+                parameters[propertyName] = new RenderFragment(builder =>
                 {
-                    var matchingProperty = renderFragmentProperties.FirstOrDefault(p => 
-                        string.Equals(p.Name, childComponent.ComponentName, StringComparison.OrdinalIgnoreCase));
-                    
-                    if (matchingProperty != null)
-                    {
-                        if (!namedRenderFragments.ContainsKey(matchingProperty.Name))
-                        {
-                            namedRenderFragments[matchingProperty.Name] = new List<Block>();
-                        }
-                        
-                        // Add the content inside the named RenderFragment element
-                        namedRenderFragments[matchingProperty.Name].AddRange(childComponent);
-                        continue;
-                    }
-                }
-                
-                // Add to regular child content if not a named RenderFragment
-                childContentBlocks.Add(child);
+                    builder.AddMarkupContent(0, html);
+                });
             }
-            
-            // Create RenderFragment parameters for named fragments
-            foreach (var kvp in namedRenderFragments)
-            {
-                var propertyName = kvp.Key;
-                var blocks = kvp.Value;
-                
-                if (blocks.Count > 0)
-                {
-                    var html = RenderBlocks(blocks, sourceRenderer);
-                    parameters[propertyName] = new RenderFragment(builder =>
-                    {
-                        builder.AddMarkupContent(0, html);
-                    });
-                }
-            }
-            
-            // Handle remaining content as ChildContent
+
             var childContentProperty = componentType.GetProperty("ChildContent");
-            if (childContentProperty != null && childContentBlocks.Count > 0)
+            if (childContentProperty != null && split.DefaultBlocks.Count > 0)
             {
-                var childHtml = RenderBlocks(childContentBlocks, sourceRenderer);
-                
+                var childHtml = RenderBlocks(split.DefaultBlocks, sourceRenderer);
                 parameters["ChildContent"] = new RenderFragment(builder =>
                 {
                     builder.AddMarkupContent(0, childHtml);
@@ -196,13 +155,4 @@ public class ComponentBlockRenderer : HtmlObjectRenderer<ComponentBlock>
         }
     }
 
-    private static object? ConvertAttributeValue(string value, Type targetType)
-    {
-        if (targetType == typeof(string)) return value;
-        if (targetType == typeof(int) && int.TryParse(value, out var intValue)) return intValue;
-        if (targetType == typeof(bool) && bool.TryParse(value, out var boolValue)) return boolValue;
-        if (targetType == typeof(double) && double.TryParse(value, out var doubleValue)) return doubleValue;
-
-        return value;
-    }
 }

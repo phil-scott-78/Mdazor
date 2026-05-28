@@ -1,0 +1,47 @@
+@* Demo interactive component: runs in WebAssembly when wrapped in MdazorContent
+   on a Blazor Web App host. Proves the SSR-prerender → WASM-hydration flow. The
+   "evaluator" is a placeholder that reports line/char counts and echoes the
+   code — swap in Roslyn scripting (Microsoft.CodeAnalysis.CSharp.Scripting) for
+   a real REPL. *@
+
+<div class="csharp-repl">
+    <label for="csharp-repl-input"><strong>C# in your browser</strong> (running in WASM)</label>
+    <textarea id="csharp-repl-input"
+              rows="6"
+              cols="60"
+              @bind="_code"
+              @bind:event="oninput"
+              style="font-family: monospace; width: 100%; display: block; margin-top: 0.5rem;"></textarea>
+
+    <button type="button" class="btn btn-primary" style="margin-top: 0.5rem;" @onclick="Run">Run</button>
+
+    @if (_hasOutput)
+    {
+        <pre style="background:#f5f5f5; padding:0.75rem; margin-top:0.5rem; border-left:3px solid #4a90e2;">@_output</pre>
+    }
+</div>
+
+@code {
+    [Parameter] public string InitialCode { get; set; } = "Console.WriteLine(\"Hello from WASM!\");";
+
+    private string _code = "";
+    private string _output = "";
+    private bool _hasOutput;
+
+    protected override void OnInitialized()
+    {
+        if (string.IsNullOrEmpty(_code))
+            _code = InitialCode;
+    }
+
+    private void Run()
+    {
+        // TODO: integrate Roslyn scripting for real execution. This stub demonstrates
+        // that the component is genuinely running C# in the browser by computing
+        // something from the input.
+        var lines = _code.Split('\n').Length;
+        var chars = _code.Length;
+        _output = $"Evaluated {lines} line(s), {chars} character(s) in WebAssembly.\n\n--- input ---\n{_code}";
+        _hasOutput = true;
+    }
+}

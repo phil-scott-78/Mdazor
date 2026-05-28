@@ -81,18 +81,14 @@ public partial class ComponentBlockParser : BlockParser
             return BlockState.BreakDiscard;
         }
 
-        // Rewind only as far as this component's own opening column. Leading
-        // whitespace UP TO the component's indent is consumed (so a nested
-        // component opened at column 2 strips two leading spaces from its
-        // children's lines), but anything beyond that is preserved so child
-        // markdown — lists, fenced code, blockquotes — sees its original
-        // relative indent. Going all the way back to ColumnBeforeIndent (= 0)
-        // would expose every leading space and turn 4-space-indented child
-        // content into a CommonMark indented code block.
-        var targetColumn = Math.Min(processor.Column, componentBlock.OpeningColumn);
-        if (targetColumn != processor.Column)
+        // Rewind to this component's own opening column rather than all the way
+        // to column 0. This strips the component's own indentation from each
+        // child line but preserves any deeper indentation, so nested markdown
+        // (lists, fenced code, blockquotes) keeps its relative indent instead of
+        // being misread as a CommonMark indented code block.
+        if (componentBlock.OpeningColumn < processor.Column)
         {
-            processor.GoToColumn(targetColumn);
+            processor.GoToColumn(componentBlock.OpeningColumn);
         }
 
         // Continue parsing content

@@ -1,32 +1,35 @@
 using Mdazor;
+using Mdazor.Demo.Client;
 using Mdazor.Demo.Components;
+using Microsoft.AspNetCore.Components.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddRazorComponents();
+builder.Services.AddRazorComponents()
+    .AddInteractiveWebAssemblyComponents();
 
-// Add Mdazor services
 builder.Services.AddMdazor()
     .AddMdazorComponent<Alert>()
     .AddMdazorComponent<Card>()
-    .AddMdazorComponent<Button>();
+    .AddMdazorComponent<Button>()
+    // CSharpRepl lives in the client assembly and runs in WASM. The server registers
+    // it with the same render mode so SSR emits the correct interactivity boundary.
+    .AddMdazorComponent<CSharpRepl>(new InteractiveWebAssemblyRenderMode());
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
 app.UseAntiforgery();
-
 app.MapStaticAssets();
-app.MapRazorComponents<App>();
+
+app.MapRazorComponents<App>()
+    .AddInteractiveWebAssemblyRenderMode()
+    .AddAdditionalAssemblies(typeof(Mdazor.Demo.Client._Imports).Assembly);
 
 app.Run();

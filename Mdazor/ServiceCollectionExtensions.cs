@@ -37,6 +37,10 @@ public static class ServiceCollectionExtensions
         // Cannot resolve scoped service 'Microsoft.AspNetCore.Components.ICascadingValueSupplier' from the root provider.
         services = services.AddTransient<HtmlRenderer>();
 
+        // Default pipeline so <MdazorContent /> can be used without manual pipeline construction.
+        services = services.AddSingleton<MarkdownPipeline>(sp =>
+            new MarkdownPipelineBuilder().UseMdazor(sp).Build());
+
         return services;
     }
 
@@ -51,6 +55,20 @@ public static class ServiceCollectionExtensions
     {
         services = services.AddTransient<T>();
         services = services.AddComponentRegistration(registry => registry.RegisterComponent<T>(name));
+        return services;
+    }
+
+    public static IServiceCollection AddMdazorComponent<T>(this IServiceCollection services, IComponentRenderMode renderMode) where T : ComponentBase
+    {
+        services = services.AddTransient<T>();
+        services = services.AddComponentRegistration(registry => registry.RegisterComponent<T>(renderMode));
+        return services;
+    }
+
+    public static IServiceCollection AddMdazorComponent<T>(this IServiceCollection services, string name, IComponentRenderMode renderMode) where T : ComponentBase
+    {
+        services = services.AddTransient<T>();
+        services = services.AddComponentRegistration(registry => registry.RegisterComponent<T>(name, renderMode));
         return services;
     }
 
