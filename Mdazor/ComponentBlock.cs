@@ -9,6 +9,10 @@ public class ComponentBlock : ContainerBlock
     public Dictionary<string, string> Attributes { get; set; } = new();
     public bool IsSelfClosing { get; set; }
 
+    // Host-supplied ambient context captured at parse time (see MarkdownParserContext.SetMdazorContext).
+    // Surfaced to the rendered component as a cascading MdazorContext value.
+    public MdazorContext? Context { get; set; }
+
     // Column where the opening tag started. Used by TryContinue so child content
     // is interpreted relative to the component's own indent (e.g. an inner
     // component nested two spaces in shouldn't turn its body into a code block).

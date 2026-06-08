@@ -31,7 +31,7 @@ public class ComponentInlineRenderer : HtmlObjectRenderer<ComponentInline>
 
         try
         {
-            var html = AsyncHelper.RunSync(() => RenderComponentAsync(componentType, inline.Attributes));
+            var html = AsyncHelper.RunSync(() => RenderComponentAsync(componentType, inline.Attributes, inline.Context));
             renderer.Write(html);
         }
         catch (Exception ex)
@@ -41,13 +41,13 @@ public class ComponentInlineRenderer : HtmlObjectRenderer<ComponentInline>
         }
     }
 
-    private async Task<string> RenderComponentAsync(Type componentType, Dictionary<string, string> attributes)
+    private async Task<string> RenderComponentAsync(Type componentType, Dictionary<string, string> attributes, MdazorContext? context)
     {
         using var scope = _serviceProvider.CreateScope();
         var htmlRenderer = scope.ServiceProvider.GetRequiredService<BlazorHtmlRenderer>();
 
         var parameters = new Dictionary<string, object?>();
-        
+
         // Convert string attributes to proper types with case-insensitive matching
         foreach (var attr in attributes)
         {
@@ -59,12 +59,7 @@ public class ComponentInlineRenderer : HtmlObjectRenderer<ComponentInline>
             }
         }
 
-        var parameterView = ParameterView.FromDictionary(parameters);
-        return await htmlRenderer.Dispatcher.InvokeAsync(async () =>
-        {
-            var output = await htmlRenderer.RenderComponentAsync(componentType, parameterView);
-            return output.ToHtmlString();
-        });
+        return await CascadingComponentRenderer.RenderToHtmlAsync(htmlRenderer, componentType, parameters, context);
     }
 
     private void WriteComponentAsHtml(MarkdigHtmlRenderer renderer, ComponentInline inline)

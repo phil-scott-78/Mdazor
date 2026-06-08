@@ -34,7 +34,8 @@ public partial class ComponentBlockParser : BlockParser
                 ComponentName = componentName,
                 Attributes = attributes,
                 IsSelfClosing = true,
-                OpeningColumn = processor.Column
+                OpeningColumn = processor.Column,
+                Context = processor.Context.GetMdazorContext()
             };
 
             processor.NewBlocks.Push(componentBlock);
@@ -54,7 +55,8 @@ public partial class ComponentBlockParser : BlockParser
                 ComponentName = componentName,
                 Attributes = attributes,
                 IsSelfClosing = false,
-                OpeningColumn = processor.Column
+                OpeningColumn = processor.Column,
+                Context = processor.Context.GetMdazorContext()
             };
 
             processor.NewBlocks.Push(componentBlock);

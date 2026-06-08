@@ -77,7 +77,7 @@ public class BlazorRenderer : MarkdigHtmlRenderer
 
         try
         {
-            var html = AsyncHelper.RunSync(() => RenderComponentAsync(componentType, block.Attributes, block, sourceRenderer));
+            var html = AsyncHelper.RunSync(() => RenderComponentAsync(componentType, block.Attributes, block, sourceRenderer, block.Context));
             Write(html);
         }
         catch (Exception ex)
@@ -99,7 +99,7 @@ public class BlazorRenderer : MarkdigHtmlRenderer
 
         try
         {
-            var html = AsyncHelper.RunSync(() => RenderComponentAsync(componentType, inline.Attributes, null, sourceRenderer));
+            var html = AsyncHelper.RunSync(() => RenderComponentAsync(componentType, inline.Attributes, null, sourceRenderer, inline.Context));
             Write(html);
         }
         catch (Exception ex)
@@ -109,7 +109,7 @@ public class BlazorRenderer : MarkdigHtmlRenderer
         }
     }
 
-    private async Task<string> RenderComponentAsync(Type componentType, Dictionary<string, string> attributes, ComponentBlock? block, MarkdigHtmlRenderer sourceRenderer)
+    private async Task<string> RenderComponentAsync(Type componentType, Dictionary<string, string> attributes, ComponentBlock? block, MarkdigHtmlRenderer sourceRenderer, MdazorContext? context)
     {
         using var scope = _serviceProvider.CreateScope();
         var htmlRenderer = scope.ServiceProvider.GetRequiredService<BlazorHtmlRenderer>();
@@ -153,12 +153,7 @@ public class BlazorRenderer : MarkdigHtmlRenderer
             }
         }
 
-        var parameterView = ParameterView.FromDictionary(parameters);
-        return await htmlRenderer.Dispatcher.InvokeAsync(async () =>
-        {
-            var output = await htmlRenderer.RenderComponentAsync(componentType, parameterView);
-            return output.ToHtmlString();
-        });
+        return await CascadingComponentRenderer.RenderToHtmlAsync(htmlRenderer, componentType, parameters, context);
     }
 
     private string RenderChildContent(ComponentBlock block, MarkdigHtmlRenderer sourceRenderer)
