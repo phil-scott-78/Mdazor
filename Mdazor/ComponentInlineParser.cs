@@ -32,6 +32,7 @@ public partial class ComponentInlineParser : InlineParser
         {
             ComponentName = componentName,
             Attributes = attributes,
+            Context = processor.Context.GetMdazorContext(),
             Span = new Markdig.Syntax.SourceSpan(slice.Start, slice.Start + match.Length - 1)
         };
 

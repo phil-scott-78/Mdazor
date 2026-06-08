@@ -143,6 +143,57 @@ renderer.Render(document);
 var html = writer.ToString();
 ```
 
+## Passing context to components
+
+Sometimes a component needs to know something about *where* it's being rendered — the
+current file name, the page route, front matter — that isn't written as a tag attribute.
+You can hand a bag of arbitrary host values to every component rendered from a document.
+
+Set it on Markdig's `MarkdownParserContext` and pass that to `Markdown.ToHtml`/`Markdown.Parse`:
+
+```csharp
+var context = new MarkdownParserContext()
+    .SetMdazorContext(new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
+    {
+        ["CurrentFile"] = "guide/intro.md",
+        ["Route"] = currentRoute,
+    });
+
+var html = Markdown.ToHtml(markdown, pipeline, context);
+```
+
+A component reads it as an ambient cascading value — no plumbing on the tag:
+
+```csharp
+@code {
+    [CascadingParameter] public MdazorContext? Context { get; set; }
+
+    private string? File => Context?.Get<string>("CurrentFile");
+}
+```
+
+`MdazorContext` offers `Values`, an indexer (`Context["CurrentFile"]`), `TryGet`, and
+`Get<T>`. The bag is delivered as a `CascadingValue<MdazorContext>`, so it reaches a
+component and its descendants.
+
+For the interactive render-tree path (`<MdazorContent>`), pass an `MdazorContext` directly:
+
+```razor
+<MdazorContent Markdown="@markdown" Context="@MdazorContext" />
+
+@code {
+    private MdazorContext MdazorContext { get; } = new(new Dictionary<string, object?>
+    {
+        ["CurrentFile"] = "guide/intro.md",
+    });
+}
+```
+
+> [!NOTE]
+> Cascading values do not cross a Blazor render-mode boundary, so the context is **not**
+> automatically delivered to an *interactive* (WASM/Server) island. It is available on the
+> static string path and the prerendered/server render tree.
+
 ## Technical Notes
 
 - Uses Blazor's `HtmlRenderer` for actual server-side component rendering into static HTML

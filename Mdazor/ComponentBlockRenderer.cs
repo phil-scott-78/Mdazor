@@ -89,12 +89,7 @@ public class ComponentBlockRenderer : HtmlObjectRenderer<ComponentBlock>
             }
         }
 
-        var parameterView = ParameterView.FromDictionary(parameters);
-        return await htmlRenderer.Dispatcher.InvokeAsync(async () =>
-        {
-            var output = await htmlRenderer.RenderComponentAsync(componentType, parameterView);
-            return output.ToHtmlString();
-        });
+        return await CascadingComponentRenderer.RenderToHtmlAsync(htmlRenderer, componentType, parameters, block?.Context);
     }
 
     private string RenderChildContent(ComponentBlock block, MarkdigHtmlRenderer sourceRenderer)
