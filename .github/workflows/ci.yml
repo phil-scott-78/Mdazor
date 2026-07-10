@@ -21,6 +21,9 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # create the GitHub release
+      actions: write    # upload release assets
 
     steps:
     - name: Checkout
