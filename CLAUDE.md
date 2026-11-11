@@ -12,7 +12,7 @@ dotnet test Mdazor.Tests/Mdazor.Tests.csproj --filter "FullyQualifiedName=Mdazor
 cd Mdazor.Demo && dotnet run     # runs the demo Blazor Server app
 ```
 
-`global.json` pins SDK `10.0.100` with `rollForward: latestFeature`, but the projects (`Mdazor`, `Mdazor.Tests`, `Mdazor.Demo`) target **`net9.0`**. Use xUnit (v2) + Shouldly for assertions.
+`global.json` pins SDK `10.0.100` with `rollForward: latestFeature`, and the projects (`Mdazor`, `Mdazor.Tests`, `Mdazor.Demo`, `Mdazor.Demo.Client`) target **`net10.0`**. Use xUnit (v2) + Shouldly for assertions.
 
 CI (`.github/workflows/ci.yml`) runs `dotnet-releaser` on pushes to `main`/`master`, which builds, tests, and publishes a NuGet package. Versioning is driven by **MinVer** (git tags) — no manual version bump in the csproj.
 

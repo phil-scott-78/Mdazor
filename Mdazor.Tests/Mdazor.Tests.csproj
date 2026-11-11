@@ -5,7 +5,7 @@
         <Nullable>enable</Nullable>
         <OutputType>Exe</OutputType>
         <RootNamespace>Mdazor.Tests</RootNamespace>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <IsPackable>false</IsPackable>
 
         <!--
@@ -34,8 +34,8 @@
         <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2"/>
         <PackageReference Include="Shouldly" Version="4.3.0"/>
         <PackageReference Include="Markdig" Version="0.41.2"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.6"/>
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.5"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.15"/>
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.15"/>
     </ItemGroup>
 
     <ItemGroup>
